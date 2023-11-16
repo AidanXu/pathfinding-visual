@@ -1,49 +1,77 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./Grid.css"; // Make sure the path to your CSS file is correct
+// src/components/Grid.js
+import React, { useEffect, useState } from "react";
+import "./Grid.css";
 
-const Grid = () => {
-  // Define the state to hold the grid size
-  const [gridSize, setGridSize] = useState({ width: 0, height: 0 });
-  const gridRef = useRef(null);
-  const N = 10; // Set N to whatever size you need
-
-  // Assuming a grid size, e.g., 10x10
-  const gridRows = 10;
-  const gridCols = 10;
-
+const Grid = ({ gridSize }) => {
   useEffect(() => {
-    // This function is for handling resize events
-    const handleResize = () => {
-      if (gridRef.current) {
-        setGridSize({
-          width: gridRef.current.offsetWidth,
-          height: gridRef.current.offsetHeight,
-        });
-      }
-    };
+    function updateSize() {
+      // Get viewport dimensions
+      const vw = Math.max(
+        document.documentElement.clientWidth || 0,
+        window.innerWidth || 0
+      );
+      const vh = Math.max(
+        document.documentElement.clientHeight || 0,
+        window.innerHeight || 0
+      );
 
-    // Add event listener for window resize
-    window.addEventListener("resize", handleResize);
+      // Navbar and padding
+      const navbarHeight = 50; // Height of the navbar
+      const padding = 10; // Padding around the grid
 
-    // Call the resize function to set initial size
-    handleResize();
+      // Calculate the available height and width for the grid
+      const availableHeight = vh - navbarHeight - padding * 2;
+      const availableWidth = vw - padding * 2;
 
-    // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []); // Empty dependency array to run once on mount
+      // Calculate the size for the cells, considering the grid should be square
+      const gridSizeValue = Math.min(availableWidth, availableHeight);
+      const cellSize = gridSizeValue / gridSize;
+
+      // Set the CSS variable for the cell size
+      document.documentElement.style.setProperty(
+        "--cell-size",
+        `${cellSize}px`
+      );
+      // Set the CSS variable for the cell size
+      document.documentElement.style.setProperty(
+        "--cell-size",
+        `${cellSize}px`
+      );
+      document.documentElement.style.setProperty("--n", gridSize); // Set the number of grid items per row/column
+    }
+
+    // Add event listener to resize the grid when the window resizes
+    window.addEventListener("resize", updateSize);
+    // Set the initial size
+    updateSize();
+
+    // Cleanup the event listener when the component unmounts
+    return () => window.removeEventListener("resize", updateSize);
+  }, [gridSize]);
+
+  // Initialize a state array to track the "wall" cells
+  const [walls, setWalls] = useState(
+    new Array(gridSize * gridSize).fill(false)
+  );
+
+  // Function to toggle a cell's "wall" state
+  const toggleWall = (index) => {
+    const newWalls = [...walls];
+    newWalls[index] = !newWalls[index];
+    setWalls(newWalls);
+  };
+
+  // Generate the grid cells
+  const cells = Array.from({ length: gridSize * gridSize });
 
   return (
     <div className="grid">
-      {Array.from({ length: N }, (_, rowIndex) => (
-        <div key={rowIndex} className="row">
-          {Array.from({ length: N }, (_, colIndex) => (
-            <div
-              key={colIndex}
-              className="node"
-              // Add any additional logic or styling here
-            />
-          ))}
-        </div>
+      {cells.map((_, index) => (
+        <div
+          key={index}
+          className={`cell ${walls[index] ? "wall" : ""}`} // Apply 'wall' class if cell is a wall
+          onClick={() => toggleWall(index)} // Toggle wall state on click
+        />
       ))}
     </div>
   );

@@ -1,65 +1,23 @@
-/* App.css */
-.navbar {
-  width: 100%;
-  padding: 1rem; /* This padding is included in the total height calculation */
-  background-color: #333;
-  color: white;
-  text-align: center;
-}
-
-.grid-container {
+/* src/App.css */
+.App {
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Aligns children to the top of the container */
-  height: calc(100vh - var(--navbar-height)); /* Takes the full height minus the navbar */
-  padding-top: var(--navbar-spacing);
-  box-sizing: border-box;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(var(--grid-size), 1fr);
-  grid-gap: 1px; /* This will be the border */
-  width: 50vw;
-  height: 50vw; /* Set both width and height to the same value for a square grid */
-  margin: 0 auto; /* This will center the grid in the container if it's not full width */
-  max-height: calc(100vh - var(--navbar-height) - var(--navbar-spacing));
-  box-sizing: border-box;
-}
-
-.row {
-  display: contents;
-}
-
-.node {
-  background: white;
-  border: 1px solid black;
-  box-sizing: border-box;
-}
-
-:root {
-  --navbar-height: 60px; /* Set the height of the navbar */
-  --navbar-spacing: 20px; /* Set the spacing below the navbar */
-  --grid-size: 10; /* Set the number of columns and rows for the grid */
-}
-
-
-html, body {
+  flex-direction: column;
+  align-items: center; /* This will center the grid-container horizontally */
+  justify-content: center; /* This will center the grid-container vertically */
+  height: 100vh; /* Full height of the viewport */
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Hide both vertical and horizontal scrollbars */
-  height: 100%;
-  width: 100%;
+  overflow: hidden; /* Prevent scrolling */
 }
 
-.navbar {
-  width: 100%;
-  height: var(--navbar-height);
-  padding: 1rem;
-  background-color: #333;
-  color: white;
-}
-
+/* src/App.css */
 .grid-container {
-  padding-top: var(--navbar-spacing);
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; /* Or any other desired padding */
+  width: 100%;
+  height: calc(100vh - 50px); /* Assuming the navbar is 50px tall */
 }
+

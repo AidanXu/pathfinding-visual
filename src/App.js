@@ -1,16 +1,17 @@
+// src/App.js
 import React from "react";
-import Grid from "./components/Grid"; // Adjust the path as necessary
-import "./App.css"; // Make sure this is pointing to the correct file
+import Navbar from "./components/Navbar";
+import Grid from "./components/Grid";
+import "./App.css";
 
 function App() {
+  const gridSize = 10; // This is the 'N' in your NxN grid
+
   return (
     <div className="App">
-      <div className="navbar">
-        <h1>Navigation Bar</h1>
-        {/* Add additional navigation items here */}
-      </div>
+      <Navbar />
       <div className="grid-container">
-        <Grid />
+        <Grid gridSize={gridSize} />
       </div>
     </div>
   );

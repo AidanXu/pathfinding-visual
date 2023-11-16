@@ -1,28 +1,24 @@
-/* Grid.css */
+/* src/components/Grid.css */
 :root {
-    --navbar-height: 60px; /* Adjust to your navbar's actual height */
-    --navbar-spacing: 20px; /* Space between navbar and grid */
-    --grid-gap: 1px; /* Gap between grid cells */
-    --node-border-width: 1px; /* Width of the node's border */
-    --grid-size: 10; /* Number of cells in one row/column */
-    --side-padding: 1rem; /* Side padding for the grid container */
+    --cell-size: 50px; /* This will be dynamically updated by JavaScript */
   }
   
   .grid {
     display: grid;
-    grid-template-columns: repeat(var(--grid-size), 1fr);
-    grid-gap: var(--grid-gap);
-    margin: var(--navbar-spacing) auto var(--navbar-spacing) auto;
-    box-sizing: border-box;
-    /* Calculate the maximum size each cell can be to fit without scrolling, considering both height and width */
-    --cell-size: calc((min(100vh - var(--navbar-height) - (var(--navbar-spacing) * 2), 100vw - (var(--side-padding) * 2)) - (var(--grid-gap) * (var(--grid-size) - 1)) - (var(--node-border-width) * 2 * var(--grid-size))) / var(--grid-size));
-    width: var(--cell-size);
-    height: var(--cell-size);
+    grid-template-columns: repeat(var(--n), var(--cell-size)); /* creates exactly N columns */
+    grid-template-rows: repeat(var(--n), var(--cell-size)); /* creates exactly N rows */
+    justify-content: center;
+    align-content: center;
+    gap: 1px;
+    padding: 1px;
   }
   
-  .node {
-    background: white;
-    border: var(--node-border-width) solid black;
-    box-sizing: border-box;
+  .cell {
+    background-color: #eee;
+    border: 1px solid #ddd;
+    cursor: pointer;
   }
   
+  .cell.wall {
+    background-color: darkgrey; /* Color for "wall" cells */
+  }

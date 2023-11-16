@@ -1,0 +1,12 @@
+/* src/components/Navbar.css */
+.navbar {
+    width: 100%; /* Full width of the viewport */
+    height: 50px; /* Set the height of your navbar */
+    background-color: #333; /* Navbar background color */
+    color: white; /* Text color */
+    display: flex;
+    justify-content: space-between; /* Space out navbar items */
+    align-items: center; /* Center items vertically */
+    padding: 0 20px; /* Padding on the sides */
+  }
+  
