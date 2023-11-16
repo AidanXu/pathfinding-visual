@@ -1,7 +1,7 @@
 /* src/components/Grid.css */
 :root {
-    --cell-size: 50px; /* This will be dynamically updated by JavaScript */
-  }
+    --cell-size: 50px;
+}
   
   .grid {
     display: grid;
@@ -17,8 +17,46 @@
     background-color: #eee;
     border: 1px solid #ddd;
     cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
   }
   
   .cell.wall {
     background-color: darkgrey; /* Color for "wall" cells */
   }
+
+.cell::before,
+.cell::after {
+  display: block; 
+  text-align: center;
+  font-size: 2em;
+}
+
+.cell.start-node::before {
+    content: '➤';
+    top: 50%;
+    left: 50%;
+    margin-bottom: 0.1em;
+    font-size: 1.5em;
+    color: #0CA6FE;
+}
+  
+  .cell.end-node::before {
+    content: '⬤'; 
+    top: 50%;
+    left: 50%;
+    margin-bottom: 0.1em;
+    font-size: 1.5em;
+    color: #0CA6FE;
+  }
+
+.label{
+    content: attr(data-label);
+    font-size: 18px; 
+    color: #124C6D;
+    margin-top: 4px;
+}

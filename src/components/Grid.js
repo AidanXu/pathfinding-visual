@@ -1,5 +1,7 @@
-// src/components/Grid.js
 import React, { useEffect, useState } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import GridItem from "./GridItem";
 import "./Grid.css";
 
 const Grid = ({ gridSize }) => {
@@ -49,31 +51,58 @@ const Grid = ({ gridSize }) => {
     return () => window.removeEventListener("resize", updateSize);
   }, [gridSize]);
 
-  // Initialize a state array to track the "wall" cells
   const [walls, setWalls] = useState(
     new Array(gridSize * gridSize).fill(false)
   );
+  // Define the default positions for start and end nodes
+  const [startNodeIndex, setStartNodeIndex] = useState(0);
+  const [endNodeIndex, setEndNodeIndex] = useState(gridSize * gridSize - 1);
+
+  // Function to move the start or end node
+  const moveNode = (newIndex, nodeType) => {
+    if (nodeType === "start") {
+      setStartNodeIndex(newIndex);
+    } else if (nodeType === "end") {
+      setEndNodeIndex(newIndex);
+    }
+  };
 
   // Function to toggle a cell's "wall" state
   const toggleWall = (index) => {
-    const newWalls = [...walls];
-    newWalls[index] = !newWalls[index];
-    setWalls(newWalls);
+    if (index !== startNodeIndex && index !== endNodeIndex) {
+      const newWalls = [...walls];
+      newWalls[index] = !newWalls[index];
+      setWalls(newWalls);
+    }
   };
 
-  // Generate the grid cells
-  const cells = Array.from({ length: gridSize * gridSize });
+  // Map over the cells to create GridItem components
+  const cells = Array.from({ length: gridSize * gridSize }, (_, index) => {
+    const isStartNode = index === startNodeIndex;
+    const isEndNode = index === endNodeIndex;
+    const isWall = walls[index];
+
+    // Determine the nodeType for each cell
+    let nodeType = null;
+    if (isStartNode) nodeType = "start";
+    if (isEndNode) nodeType = "end";
+
+    return (
+      <GridItem
+        key={index}
+        index={index}
+        nodeType={nodeType}
+        isWall={isWall}
+        moveNode={moveNode}
+        toggleWall={toggleWall}
+      />
+    );
+  });
 
   return (
-    <div className="grid">
-      {cells.map((_, index) => (
-        <div
-          key={index}
-          className={`cell ${walls[index] ? "wall" : ""}`} // Apply 'wall' class if cell is a wall
-          onClick={() => toggleWall(index)} // Toggle wall state on click
-        />
-      ))}
-    </div>
+    <DndProvider backend={HTML5Backend}>
+      <div className="grid">{cells}</div>
+    </DndProvider>
   );
 };
 
