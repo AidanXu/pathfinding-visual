@@ -2,9 +2,19 @@ import React, { useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import GridItem from "./GridItem";
+import CustomDragLayer from "./CustomDragLayer";
 import "./Grid.css";
 
-const Grid = ({ gridSize }) => {
+const Grid = ({
+  gridSize,
+  walls,
+  setWalls,
+  startNodeIndex,
+  setStartNodeIndex,
+  endNodeIndex,
+  setEndNodeIndex,
+  path,
+}) => {
   useEffect(() => {
     function updateSize() {
       // Get viewport dimensions
@@ -29,15 +39,22 @@ const Grid = ({ gridSize }) => {
       const gridSizeValue = Math.min(availableWidth, availableHeight);
       const cellSize = gridSizeValue / gridSize;
 
-      // Set the CSS variable for the cell size
+      // Calculate the size for icons and labels based on cell size
+      const iconSize = Math.max(cellSize * 0.3, 12); // Ensure icons have a minimum size
+      const labelFontSize = Math.max(cellSize * 0.15, 12); // Ensure labels have a minimum size
+
+      // Set the CSS variables for the cell size, icon size, and label font size
       document.documentElement.style.setProperty(
         "--cell-size",
         `${cellSize}px`
       );
-      // Set the CSS variable for the cell size
       document.documentElement.style.setProperty(
-        "--cell-size",
-        `${cellSize}px`
+        "--icon-size",
+        `${iconSize}px`
+      );
+      document.documentElement.style.setProperty(
+        "--label-font-size",
+        `${labelFontSize}px`
       );
       document.documentElement.style.setProperty("--n", gridSize); // Set the number of grid items per row/column
     }
@@ -51,18 +68,18 @@ const Grid = ({ gridSize }) => {
     return () => window.removeEventListener("resize", updateSize);
   }, [gridSize]);
 
-  const [walls, setWalls] = useState(
-    new Array(gridSize * gridSize).fill(false)
-  );
-  // Define the default positions for start and end nodes
-  const [startNodeIndex, setStartNodeIndex] = useState(0);
-  const [endNodeIndex, setEndNodeIndex] = useState(gridSize * gridSize - 1);
+  // Update the start and end node positions when gridSize changes
+  useEffect(() => {
+    setStartNodeIndex(0); // Reset start node to top left corner
+    setEndNodeIndex(gridSize * gridSize - 1); // Set end node to bottom right corner
+    setWalls(new Array(gridSize * gridSize).fill(false)); // Reset walls for new grid size
+  }, [gridSize]);
 
   // Function to move the start or end node
   const moveNode = (newIndex, nodeType) => {
-    if (nodeType === "start") {
+    if (nodeType === "Start") {
       setStartNodeIndex(newIndex);
-    } else if (nodeType === "end") {
+    } else if (nodeType === "End") {
       setEndNodeIndex(newIndex);
     }
   };
@@ -76,6 +93,28 @@ const Grid = ({ gridSize }) => {
     }
   };
 
+  const [isDragging, setIsDragging] = useState(false); // New state to track dragging
+
+  const [hasMouseMoved, setHasMouseMoved] = useState(false);
+
+  const handleMouseDown = (index, nodeType) => {
+    if (nodeType !== "Start" && nodeType !== "End") {
+      setIsDragging(true);
+      setHasMouseMoved(false);
+    }
+  };
+
+  const handleMouseEnter = (index, nodeType) => {
+    if (isDragging && nodeType !== "Start" && nodeType !== "End") {
+      setHasMouseMoved(true);
+      toggleWall(index);
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   // Map over the cells to create GridItem components
   const cells = Array.from({ length: gridSize * gridSize }, (_, index) => {
     const isStartNode = index === startNodeIndex;
@@ -84,8 +123,8 @@ const Grid = ({ gridSize }) => {
 
     // Determine the nodeType for each cell
     let nodeType = null;
-    if (isStartNode) nodeType = "start";
-    if (isEndNode) nodeType = "end";
+    if (isStartNode) nodeType = "Start";
+    if (isEndNode) nodeType = "End";
 
     return (
       <GridItem
@@ -95,13 +134,21 @@ const Grid = ({ gridSize }) => {
         isWall={isWall}
         moveNode={moveNode}
         toggleWall={toggleWall}
+        handleMouseDown={handleMouseDown}
+        handleMouseEnter={handleMouseEnter}
+        handleMouseUp={handleMouseUp}
+        hasMouseMoved={hasMouseMoved}
+        isPath={path.includes(index)}
       />
     );
   });
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="grid">{cells}</div>
+      <CustomDragLayer />
+      <div className="grid" onMouseUp={handleMouseUp}>
+        {cells}
+      </div>
     </DndProvider>
   );
 };

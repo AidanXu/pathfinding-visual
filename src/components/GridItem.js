@@ -1,14 +1,35 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
-const GridItem = ({ index, nodeType, isWall, moveNode, toggleWall }) => {
+const GridItem = ({
+  index,
+  nodeType,
+  isWall,
+  moveNode,
+  toggleWall,
+  handleMouseDown,
+  handleMouseEnter,
+  handleMouseUp,
+  hasMouseMoved,
+  isPath,
+}) => {
   const ref = useRef(null); // Create a ref for the cell
 
-  const [, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: "NODE",
     item: { type: nodeType, index },
-    canDrag: () => nodeType === "start" || nodeType === "end", // Only start/end nodes are draggable
+    canDrag: () => nodeType === "Start" || nodeType === "End", // Dragging only allowed for Start and End nodes
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    preview: getEmptyImage(), // Set an empty image as the drag preview
   });
+
+  // Set up the drag preview
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [preview]);
 
   const [, drop] = useDrop({
     accept: "NODE",
@@ -20,23 +41,32 @@ const GridItem = ({ index, nodeType, isWall, moveNode, toggleWall }) => {
     canDrop: () => !isWall, // Only non-wall cells can accept the drop
   });
 
-  // Conditionally apply the drag and drop refs
-  if (nodeType === "start" || nodeType === "end") {
-    drag(ref);
-  } else if (!isWall) {
-    drop(ref);
-  }
+  drag(drop(ref)); // Connect both drag and drop to the ref
 
   let className = "cell";
-  if (nodeType === "start") className += " start-node";
-  if (nodeType === "end") className += " end-node";
+  if (nodeType === "Start") className += " start-node";
+  if (nodeType === "End") className += " end-node";
   if (isWall) className += " wall";
+  if (isPath && nodeType !== "Start" && nodeType !== "End") {
+    className += " path"; // Draw path only if it's not a start or end node
+  }
 
   return (
-    <div ref={ref} className={className} onClick={() => toggleWall(index)}>
-      {nodeType === "start" && <div className="label">Start</div>}
-      {nodeType === "end" && <div className="label">End</div>}
-      {/* Additional content can be added here if needed */}
+    <div
+      ref={ref}
+      className={className}
+      onClick={() => {
+        if (!hasMouseMoved && nodeType !== "Start" && nodeType !== "End") {
+          toggleWall(index);
+        }
+      }}
+      onMouseDown={() => handleMouseDown(index, nodeType)}
+      onMouseEnter={() => handleMouseEnter(index, nodeType)}
+      onMouseUp={() => handleMouseUp()}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+    >
+      {nodeType === "Start" && <div className="label">Start</div>}
+      {nodeType === "End" && <div className="label">End</div>}
     </div>
   );
 };

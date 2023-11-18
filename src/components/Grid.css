@@ -1,62 +1,80 @@
 /* src/components/Grid.css */
 :root {
-    --cell-size: 50px;
+  --cell-size: 50px; /* Default cell size, will be overridden by JS */
+  --icon-size: 1em; /* Default icon size, will be overridden by JS */
+  --label-font-size: 1em; /* Default label font size, will be overridden by JS */
 }
-  
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(var(--n), var(--cell-size)); /* creates exactly N columns */
-    grid-template-rows: repeat(var(--n), var(--cell-size)); /* creates exactly N rows */
-    justify-content: center;
-    align-content: center;
-    gap: 1px;
-    padding: 1px;
-  }
-  
-  .cell {
-    background-color: #eee;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    position: relative;
-  }
-  
-  .cell.wall {
-    background-color: darkgrey; /* Color for "wall" cells */
-  }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n), var(--cell-size)); /* creates exactly N columns */
+  grid-template-rows: repeat(var(--n), var(--cell-size)); /* creates exactly N rows */
+  justify-content: center;
+  align-content: center;
+  gap: 1px;
+  padding: 1px;
+}
+
+.cell {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+}
+
+.cell.wall {
+  background-color: rgb(12, 53, 71); /* Color for "wall" cells */
+}
 
 .cell::before,
 .cell::after {
-  display: block; 
+  display: block;
   text-align: center;
-  font-size: 2em;
+  font-size: var(--icon-size); /* Use the variable for icon size */
 }
 
 .cell.start-node::before {
-    content: '➤';
-    top: 50%;
-    left: 50%;
-    margin-bottom: 0.1em;
-    font-size: 1.5em;
-    color: #0CA6FE;
+  content: '➤';
+  color: #0CA6FE;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }
-  
-  .cell.end-node::before {
-    content: '⬤'; 
-    top: 50%;
-    left: 50%;
-    margin-bottom: 0.1em;
-    font-size: 1.5em;
-    color: #0CA6FE;
-  }
 
-.label{
-    content: attr(data-label);
-    font-size: 18px; 
-    color: #124C6D;
-    margin-top: 4px;
+.cell.end-node::before {
+  content: '⬤';
+  color: #0CA6FE;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.cell .label {
+  position: absolute; /* Absolute position within the .cell */
+  bottom: 0; /* Align to the bottom of the cell */
+  left: 0; /* Align to the left of the cell */
+  width: 100%; /* Take full width to center text */
+  text-align: center; /* Center the text */
+  font-size: var(--label-font-size); /* Use the dynamic font size */
+  color: #124C6D;
+  pointer-events: none; /* Prevents the label from blocking cell clicks */
+}
+
+.cell::before {
+  /* Center the content in the cell */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--icon-size); /* Use the dynamic size for icons */
+}
+
+.cell.path {
+  background-color: green; /* Or any other color you want for the path */
 }
