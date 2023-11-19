@@ -13,6 +13,7 @@
   align-content: center;
   gap: 1px;
   padding: 1px;
+  box-sizing: border-box;
 }
 
 .cell {
@@ -24,6 +25,7 @@
   justify-content: center;
   flex-direction: column;
   position: relative;
+  box-sizing: border-box;
 }
 
 .cell.wall {

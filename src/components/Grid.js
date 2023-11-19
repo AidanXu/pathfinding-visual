@@ -14,6 +14,7 @@ const Grid = ({
   endNodeIndex,
   setEndNodeIndex,
   path,
+  resetPath,
 }) => {
   useEffect(() => {
     function updateSize() {
@@ -36,7 +37,11 @@ const Grid = ({
       const availableWidth = vw - padding * 2;
 
       // Calculate the size for the cells, considering the grid should be square
-      const gridSizeValue = Math.min(availableWidth, availableHeight);
+      const totalBorderAndGapSize = gridSize - 1;
+      const gridSizeValue = Math.min(
+        availableWidth - totalBorderAndGapSize,
+        availableHeight - totalBorderAndGapSize
+      );
       const cellSize = gridSizeValue / gridSize;
 
       // Calculate the size for icons and labels based on cell size
@@ -64,6 +69,9 @@ const Grid = ({
     // Set the initial size
     updateSize();
 
+    // Reset the path
+    resetPath();
+
     // Cleanup the event listener when the component unmounts
     return () => window.removeEventListener("resize", updateSize);
   }, [gridSize]);
@@ -86,6 +94,8 @@ const Grid = ({
 
   // Function to toggle a cell's "wall" state
   const toggleWall = (index) => {
+    if (path.includes(index)) return;
+
     if (index !== startNodeIndex && index !== endNodeIndex) {
       const newWalls = [...walls];
       newWalls[index] = !newWalls[index];

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import Navbar from "./components/Navbar";
 import Grid from "./components/Grid";
+import Sidebar from "./components/Sidebar";
 import { aStar } from "./components/AStarSearch";
+import greedyBestFirstSearch from "./components/GreedySearch";
+import { bfs } from "./components/bfs";
+import { dfs } from "./components/dfs";
+import { recursiveDivisionMaze } from "./components/recursiveDivision";
 import "./App.css";
 
 function App() {
@@ -14,76 +19,93 @@ function App() {
   const [startNodeIndex, setStartNodeIndex] = useState(0);
   const [endNodeIndex, setEndNodeIndex] = useState(gridSize * gridSize - 1);
 
-  // Function to handle changes in the slider
-  const handleSliderChange = (event) => {
-    setGridSize(Number(event.target.value));
-  };
-
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("A* Search");
 
   // Algorithms list
-  const algorithms = ["A* Search", "Greedy Best-first Search"];
-
-  const handleAlgorithmChange = (e) => {
-    setSelectedAlgorithm(e.target.value);
-  };
+  const algorithms = ["A* Search", "Greedy Best-first Search", "BFS", "DFS"];
 
   const [path, setPath] = useState([]);
+
+  const resetPath = () => {
+    setPath([]);
+  };
 
   const drawPath = (foundPath) => {
     // Assuming foundPath is an array of indices representing the path
     setPath(foundPath);
   };
 
+  // Function to call pathfinding algorithm
   const findPath = () => {
-    const path = aStar(startNodeIndex, endNodeIndex, walls, gridSize);
+    let path = null;
+    switch (selectedAlgorithm) {
+      case "A* Search":
+        path = aStar(startNodeIndex, endNodeIndex, walls, gridSize);
+        break;
+      case "Greedy Best-first Search":
+        path = greedyBestFirstSearch(
+          startNodeIndex,
+          endNodeIndex,
+          walls,
+          gridSize
+        );
+        break;
+      case "BFS":
+        path = bfs(startNodeIndex, endNodeIndex, walls, gridSize);
+        break;
+      case "DFS":
+        path = dfs(startNodeIndex, endNodeIndex, walls, gridSize);
+        break;
+      default:
+        break;
+    }
+
     if (path) {
       drawPath(path);
-      console.log(path);
     } else {
       console.log("No path found");
     }
   };
 
+  // Function to generate a maze using recursive division
+  const handleGenerateMaze = () => {
+    const newWalls = recursiveDivisionMaze(
+      gridSize,
+      startNodeIndex,
+      endNodeIndex
+    );
+    setWalls(newWalls);
+  };
+
   return (
     <div className="App">
       <Navbar />
-      <div className="sidebar-space">
-        <div className="sidebar">
-          <label htmlFor="grid-size-slider">
-            Grid Size: {gridSize}x{gridSize}
-          </label>
-          <input
-            id="grid-size-slider"
-            type="range"
-            min="8"
-            max="24"
-            value={gridSize}
-            onChange={handleSliderChange}
+      <div className="flex-container">
+        <div className="sidebar-wrapper">
+          <Sidebar
+            gridSize={gridSize}
+            setGridSize={setGridSize}
+            selectedAlgorithm={selectedAlgorithm}
+            setSelectedAlgorithm={setSelectedAlgorithm}
+            algorithms={algorithms}
+            findPath={findPath}
+            handleGenerateMaze={handleGenerateMaze}
           />
-          <div className="algorithm-controls">
-            <select value={selectedAlgorithm} onChange={handleAlgorithmChange}>
-              {algorithms.map((algorithm, index) => (
-                <option key={index} value={algorithm}>
-                  {algorithm}
-                </option>
-              ))}
-            </select>
-            <button onClick={findPath}>Find Path</button>
-          </div>
         </div>
-      </div>
-      <div className="grid-container">
-        <Grid
-          gridSize={gridSize}
-          walls={walls}
-          setWalls={setWalls}
-          startNodeIndex={startNodeIndex}
-          setStartNodeIndex={setStartNodeIndex}
-          endNodeIndex={endNodeIndex}
-          setEndNodeIndex={setEndNodeIndex}
-          path={path}
-        />
+
+        <div className="grid-container">
+          <Grid
+            gridSize={gridSize}
+            walls={walls}
+            setWalls={setWalls}
+            startNodeIndex={startNodeIndex}
+            setStartNodeIndex={setStartNodeIndex}
+            endNodeIndex={endNodeIndex}
+            setEndNodeIndex={setEndNodeIndex}
+            path={path}
+            resetPath={resetPath}
+          />
+        </div>
       </div>
     </div>
   );

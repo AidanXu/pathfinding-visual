@@ -2,11 +2,18 @@
 .App {
   display: flex;
   flex-direction: row;
-  align-items: stretch; /* Stretch to fill the height */
+  align-items: center; /* Align vertically */
+  justify-content: center; /* Align horizontally */
   height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+.sidebar-wrapper {
+  display: flex;
+  justify-content: center; /* Center sidebar horizontally */
+  padding-right: 20px; /* Space between sidebar and grid */
 }
 
 .navbar {
@@ -17,26 +24,18 @@
   z-index: 10;
 }
 
-.sidebar-space {
-  width: 250px; /* Adjust to the width of your sidebar */
+.flex-container {
   display: flex;
-  flex-direction: column;
-  justify-content: center; /* Center the sidebar vertically */
-}
-
-.sidebar {
-  width: 100%; /* Take up all the space of sidebar-space */
-  padding: 20px; /* Padding inside the sidebar */
-  background-color: #f0f0f0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 5;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%; 
+  padding-top: 50px;
+  box-sizing: border-box;
+  justify-content: space-between;
 }
 
 .grid-container {
-  flex-grow: 0.5;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 50px; /* Make room for fixed navbar */
-  box-sizing: border-box;
+  margin: auto;
+  margin-right: auto; /* Ensure the right margin pushes the element to the left */
+  margin-left: 300px;
 }
